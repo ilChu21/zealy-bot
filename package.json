@@ -1,0 +1,23 @@
+{
+  "name": "zealy-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node-telegram-bot-api": "^0.64.2",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "axios": "^1.6.7",
+    "axios-retry": "^4.0.0",
+    "dotenv": "^16.4.5",
+    "node-telegram-bot-api": "^0.64.0"
+  }
+}
