@@ -53,7 +53,7 @@ bot.onText(/\/leaderboard/, async (msg) => {
     });
 
     message +=
-      '\n<b><a href="https://zealy.io/cw/okxchange/leaderboard">Zealy Leaderboard</a></b>';
+      '\n<b><a href="https://zealy.io/cw/swapxfi/leaderboard">Zealy Leaderboard</a></b>';
 
     bot.sendMessage(chatId, message, {
       parse_mode: 'HTML',
