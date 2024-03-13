@@ -9,7 +9,7 @@ axiosRetry(axios, {
   retryDelay: axiosRetry.exponentialDelay,
 });
 
-const subdomain = 'okxchange';
+const subdomain = 'swapxfi';
 const page = 0;
 const limit = 20;
 
