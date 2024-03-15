@@ -18,7 +18,7 @@ const subdomain = 'swapxfi';
 const page = 0;
 const limit = 20;
 
-const channelUsername = 'ilchuDevChannel';
+const channelUsername = 'SwapXfiannouncements1';
 
 console.log('Zealy bot started...');
 
@@ -55,7 +55,6 @@ bot.on('channel_post', async (msg) => {
         };
 
         await discordWebhook.send({ embeds: [embed] });
-        await discordWebhook.send({ files: [videoUrl] });
       } else {
         const embed = {
           title: title,
