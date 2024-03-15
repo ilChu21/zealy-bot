@@ -48,8 +48,6 @@ bot.on('channel_post', async (msg) => {
         const videoInfo = await bot.getFile(videoFileId);
         const videoUrl = `https://api.telegram.org/file/bot${TELEGRAM_API_KEY}/${videoInfo.file_path}`;
 
-        await discordWebhook.send({ files: [videoUrl] });
-
         const embed = {
           title: title,
           description: msg.caption || '',
@@ -57,6 +55,7 @@ bot.on('channel_post', async (msg) => {
         };
 
         await discordWebhook.send({ embeds: [embed] });
+        await discordWebhook.send({ files: [videoUrl] });
       } else {
         const embed = {
           title: title,
