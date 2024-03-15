@@ -13,7 +13,22 @@ const subdomain = 'swapxfi';
 const page = 0;
 const limit = 20;
 
+const channelUsername = 'ilchuDevChannel';
+
 console.log('Zealy bot started...');
+
+bot.on('message', (msg) => {
+  if (msg.chat.username === channelUsername) {
+    console.log(`New announcement in ${channelUsername}: ${msg.text}`);
+    if (msg.photo) {
+      console.log('Photo:', msg.photo);
+    }
+  }
+});
+
+bot.on('polling_error', (error) => {
+  console.error('Polling error:', error);
+});
 
 bot.onText(/\/leaderboard/, async (msg) => {
   try {
