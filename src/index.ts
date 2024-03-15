@@ -24,9 +24,10 @@ console.log('Zealy bot started...');
 
 bot.on('channel_post', (msg) => {
   if (msg.chat.username === channelUsername) {
-    const announcement = `New announcement in ${channelUsername}: ${
+    let announcement = `New announcement in ${channelUsername}: ${
       msg.text || ''
     }`;
+    announcement = announcement.replace(/(https?:\/\/[^\s]+)/g, '```\n$1\n```');
 
     const discordWebhook = new WebhookClient({ url: DISCORD_WEBHOOK_URL });
 
