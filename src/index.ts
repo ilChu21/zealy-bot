@@ -22,46 +22,53 @@ const channelUsername = 'ilchuDevChannel';
 
 console.log('Zealy bot started...');
 
-bot.on('channel_post', (msg) => {
+bot.on('channel_post', async (msg) => {
   if (msg.chat.username === channelUsername) {
-    let announcement = `New announcement in ${channelUsername}: ${
+    const announcement = `New announcement in ${channelUsername}: ${
       msg.text || ''
     }`;
 
-    announcement = announcement.replace(/(https?:\/\/[^\s]+)/g, '`$1`');
-
     const discordWebhook = new WebhookClient({ url: DISCORD_WEBHOOK_URL });
 
-    if (msg.photo) {
-      const photoFileId = msg.photo[msg.photo.length - 1].file_id;
+    try {
+      if (msg.photo) {
+        const photoFileId = msg.photo[msg.photo.length - 1].file_id;
+        const photoInfo = await bot.getFile(photoFileId);
+        const photoUrl = `https://api.telegram.org/file/bot${TELEGRAM_API_KEY}/${photoInfo.file_path}`;
 
-      bot
-        .getFile(photoFileId)
-        .then((photoInfo) => {
-          const photoUrl = `https://api.telegram.org/file/bot${TELEGRAM_API_KEY}/${photoInfo.file_path}`;
-          const messageContent = `${announcement}\n${msg.caption || ''}`;
+        const embed = {
+          title: 'Announcement',
+          image: { url: photoUrl },
+          description: msg.caption || '',
+          setColor: '#01FE89',
+        };
 
-          discordWebhook.send({ files: [photoUrl], content: messageContent });
-        })
-        .catch((error) => {
-          console.error('Error getting photo:', error);
-        });
-    } else if (msg.video) {
-      const videoFileId = msg.video.file_id;
+        await discordWebhook.send({ embeds: [embed] });
+      } else if (msg.video) {
+        const videoFileId = msg.video.file_id;
+        const videoInfo = await bot.getFile(videoFileId);
+        const videoUrl = `https://api.telegram.org/file/bot${TELEGRAM_API_KEY}/${videoInfo.file_path}`;
 
-      bot
-        .getFile(videoFileId)
-        .then((videoInfo) => {
-          const videoUrl = `https://api.telegram.org/file/bot${TELEGRAM_API_KEY}/${videoInfo.file_path}`;
-          const messageContent = `${announcement}\n${msg.caption || ''}`;
+        await discordWebhook.send({ files: [videoUrl] });
 
-          discordWebhook.send({ files: [videoUrl], content: messageContent });
-        })
-        .catch((error) => {
-          console.error('Error getting video:', error);
-        });
-    } else {
-      discordWebhook.send(announcement);
+        const embed = {
+          title: 'Announcement',
+          description: msg.caption || '',
+          setColor: '#01FE89',
+        };
+
+        await discordWebhook.send({ embeds: [embed] });
+      } else {
+        const embed = {
+          title: 'Announcement',
+          description: announcement,
+          setColor: '#01FE89',
+        };
+
+        await discordWebhook.send({ embeds: [embed] });
+      }
+    } catch (error) {
+      console.error('Error sending announcement:', error);
     }
   }
 });
