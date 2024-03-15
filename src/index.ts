@@ -27,7 +27,7 @@ bot.on('channel_post', (msg) => {
     let announcement = `New announcement in ${channelUsername}: ${
       msg.text || ''
     }`;
-    announcement = announcement.replace(/(https?:\/\/[^\s]+)/g, '```\n$1\n```');
+    announcement = announcement.replace(/(https?:\/\/[^\s]+)/g, '<$1>');
 
     const discordWebhook = new WebhookClient({ url: DISCORD_WEBHOOK_URL });
 
