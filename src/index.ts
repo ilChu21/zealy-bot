@@ -1,9 +1,8 @@
 import 'dotenv/config';
 import axios from 'axios';
 import axiosRetry from 'axios-retry';
-import { Client, IntentsBitField, WebhookClient } from 'discord.js';
+import { WebhookClient } from 'discord.js';
 import {
-  DISCORD_TOKEN,
   DISCORD_WEBHOOK_URL,
   TELEGRAM_API_KEY,
   ZEALY_API_KEY,
@@ -23,15 +22,10 @@ const channelUsername = 'ilchuDevChannel';
 
 console.log('Zealy bot started...');
 
-const discordClient = new Client({
-  intents: [IntentsBitField.Flags.Guilds],
-});
-
 bot.on('channel_post', (msg) => {
   if (msg.chat.username === channelUsername) {
     const announcement = `New announcement in ${channelUsername}: ${msg.text}`;
     const discordWebhook = new WebhookClient({ url: DISCORD_WEBHOOK_URL });
-    discordWebhook.send(announcement);
 
     if (msg.photo) {
       const photoFileId = msg.photo[msg.photo.length - 1].file_id;
@@ -41,16 +35,24 @@ bot.on('channel_post', (msg) => {
         .then((photoInfo) => {
           const photoUrl = `https://api.telegram.org/file/bot${TELEGRAM_API_KEY}/${photoInfo.file_path}`;
 
-          discordWebhook.send({ files: [photoUrl] });
+          const messageContent = `${announcement}\n${msg.caption || ''}`;
+
+          const embed = {
+            title: 'Photo from Telegram',
+            image: { url: photoUrl },
+            description: msg.caption || '',
+          };
+
+          discordWebhook.send({ content: messageContent, embeds: [embed] });
         })
         .catch((error) => {
           console.error('Error getting photo:', error);
         });
+    } else {
+      discordWebhook.send(announcement);
     }
   }
 });
-
-discordClient.login(DISCORD_TOKEN);
 
 bot.on('polling_error', (error) => {
   console.error('Polling error:', error);
