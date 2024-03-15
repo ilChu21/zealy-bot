@@ -27,7 +27,8 @@ bot.on('channel_post', (msg) => {
     let announcement = `New announcement in ${channelUsername}: ${
       msg.text || ''
     }`;
-    announcement = announcement.replace(/(https?:\/\/[^\s]+)/g, '<$1>');
+
+    announcement = announcement.replace(/(https?:\/\/[^\s]+)/g, '`$1`');
 
     const discordWebhook = new WebhookClient({ url: DISCORD_WEBHOOK_URL });
 
@@ -40,7 +41,7 @@ bot.on('channel_post', (msg) => {
           const photoUrl = `https://api.telegram.org/file/bot${TELEGRAM_API_KEY}/${photoInfo.file_path}`;
           const messageContent = `${announcement}\n${msg.caption || ''}`;
 
-          discordWebhook.send({ content: messageContent, files: [photoUrl] });
+          discordWebhook.send({ files: [photoUrl], content: messageContent });
         })
         .catch((error) => {
           console.error('Error getting photo:', error);
@@ -54,7 +55,7 @@ bot.on('channel_post', (msg) => {
           const videoUrl = `https://api.telegram.org/file/bot${TELEGRAM_API_KEY}/${videoInfo.file_path}`;
           const messageContent = `${announcement}\n${msg.caption || ''}`;
 
-          discordWebhook.send({ content: messageContent, files: [videoUrl] });
+          discordWebhook.send({ files: [videoUrl], content: messageContent });
         })
         .catch((error) => {
           console.error('Error getting video:', error);
