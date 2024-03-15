@@ -17,9 +17,10 @@ const channelUsername = 'ilchuDevChannel';
 
 console.log('Zealy bot started...');
 
-bot.on('message', (msg) => {
+bot.on('channel_post', (msg) => {
   if (msg.chat.username === channelUsername) {
     console.log(`New announcement in ${channelUsername}: ${msg.text}`);
+
     if (msg.photo) {
       console.log('Photo:', msg.photo);
     }
