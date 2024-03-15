@@ -24,7 +24,10 @@ console.log('Zealy bot started...');
 
 bot.on('channel_post', (msg) => {
   if (msg.chat.username === channelUsername) {
-    const announcement = `New announcement in ${channelUsername}: ${msg.text}`;
+    const announcement = `New announcement in ${channelUsername}: ${
+      msg.text || ''
+    }`;
+
     const discordWebhook = new WebhookClient({ url: DISCORD_WEBHOOK_URL });
 
     if (msg.photo) {
@@ -34,19 +37,26 @@ bot.on('channel_post', (msg) => {
         .getFile(photoFileId)
         .then((photoInfo) => {
           const photoUrl = `https://api.telegram.org/file/bot${TELEGRAM_API_KEY}/${photoInfo.file_path}`;
-
           const messageContent = `${announcement}\n${msg.caption || ''}`;
 
-          const embed = {
-            title: 'Photo from Telegram',
-            image: { url: photoUrl },
-            description: msg.caption || '',
-          };
-
-          discordWebhook.send({ content: messageContent, embeds: [embed] });
+          discordWebhook.send({ content: messageContent, files: [photoUrl] });
         })
         .catch((error) => {
           console.error('Error getting photo:', error);
+        });
+    } else if (msg.video) {
+      const videoFileId = msg.video.file_id;
+
+      bot
+        .getFile(videoFileId)
+        .then((videoInfo) => {
+          const videoUrl = `https://api.telegram.org/file/bot${TELEGRAM_API_KEY}/${videoInfo.file_path}`;
+          const messageContent = `${announcement}\n${msg.caption || ''}`;
+
+          discordWebhook.send({ content: messageContent, files: [videoUrl] });
+        })
+        .catch((error) => {
+          console.error('Error getting video:', error);
         });
     } else {
       discordWebhook.send(announcement);
