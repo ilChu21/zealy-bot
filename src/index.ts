@@ -24,9 +24,8 @@ console.log('Zealy bot started...');
 
 bot.on('channel_post', async (msg) => {
   if (msg.chat.username === channelUsername) {
-    const announcement = `New announcement in ${channelUsername}: ${
-      msg.text || ''
-    }`;
+    const title = 'New Announcement!';
+    const color = parseInt('01FE89', 16);
 
     const discordWebhook = new WebhookClient({ url: DISCORD_WEBHOOK_URL });
 
@@ -37,10 +36,10 @@ bot.on('channel_post', async (msg) => {
         const photoUrl = `https://api.telegram.org/file/bot${TELEGRAM_API_KEY}/${photoInfo.file_path}`;
 
         const embed = {
-          title: 'Announcement',
+          title: title,
           image: { url: photoUrl },
           description: msg.caption || '',
-          setColor: '#01FE89',
+          color: color,
         };
 
         await discordWebhook.send({ embeds: [embed] });
@@ -52,17 +51,17 @@ bot.on('channel_post', async (msg) => {
         await discordWebhook.send({ files: [videoUrl] });
 
         const embed = {
-          title: 'Announcement',
+          title: title,
           description: msg.caption || '',
-          setColor: '#01FE89',
+          color: color,
         };
 
         await discordWebhook.send({ embeds: [embed] });
       } else {
         const embed = {
-          title: 'Announcement',
-          description: announcement,
-          setColor: '#01FE89',
+          title: title,
+          description: msg.text || '',
+          color: color,
         };
 
         await discordWebhook.send({ embeds: [embed] });
