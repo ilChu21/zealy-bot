@@ -53,7 +53,7 @@ bot.on('channel_post', async (msg) => {
           description: msg.caption || '',
           color: color,
         };
-
+        await discordWebhook.send({ files: [videoUrl] });
         await discordWebhook.send({ embeds: [embed] });
       } else {
         const embed = {
