@@ -30,6 +30,8 @@ bot.on('channel_post', async (msg) => {
     const discordWebhook = new WebhookClient({ url: DISCORD_WEBHOOK_URL });
 
     try {
+      await discordWebhook.send('@everyone');
+
       if (msg.photo) {
         const photoFileId = msg.photo[msg.photo.length - 1].file_id;
         const photoInfo = await bot.getFile(photoFileId);
