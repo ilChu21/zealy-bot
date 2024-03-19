@@ -24,6 +24,11 @@ console.log('Zealy bot started...');
 
 bot.on('channel_post', async (msg) => {
   if (msg.chat.username === channelUsername) {
+    if (msg.poll) {
+      console.log('Skipping poll message:', msg.poll);
+      return;
+    }
+
     const title = 'New Announcement!';
     const color = parseInt('01FE89', 16);
 
