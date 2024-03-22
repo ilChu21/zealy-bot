@@ -7,6 +7,7 @@ import {
   DISCORD_WEBHOOK_URL,
   TELEGRAM_API_KEY,
   ZEALY_API_KEY,
+  ZEALY_ENDPOINT_SECRET,
 } from './utils/env-vars';
 import { bot } from './telegram/client';
 
@@ -131,8 +132,6 @@ bot.onText(/\/leaderboard/, async (msg) => {
   }
 });
 
-const endpointSecret = '5888a6800dbac634e52d8504f097e064';
-
 const app = express();
 
 app.use(express.json());
@@ -141,7 +140,7 @@ app.post('/webhook', (req: any, res: any) => {
   const { id, type, data, time, secret } = req.body;
   const chatId = '-1002064706879';
 
-  if (secret === endpointSecret) {
+  if (secret === ZEALY_ENDPOINT_SECRET) {
     const message = `New Quest Published: ${data.title}\nDescription: ${data.description}`;
 
     bot.sendMessage(chatId, message, {
