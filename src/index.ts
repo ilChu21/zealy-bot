@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import axios from 'axios';
 import axiosRetry from 'axios-retry';
+import express from 'express';
 import { WebhookClient } from 'discord.js';
 import {
   DISCORD_WEBHOOK_URL,
@@ -129,3 +130,27 @@ bot.onText(/\/leaderboard/, async (msg) => {
     console.error(error);
   }
 });
+
+const endpointSecret = '5888a6800dbac634e52d8504f097e064';
+
+const app = express();
+
+app.use(express.json());
+
+app.post('/webhook', (req: any, res: any) => {
+  const { id, type, data, time, secret } = req.body;
+  const chatId = '-1002064706879';
+
+  if (secret === endpointSecret) {
+    const message = `New Quest Published: ${data.title}\nDescription: ${data.description}`;
+
+    bot.sendMessage(chatId, message, {
+      parse_mode: 'HTML',
+      disable_web_page_preview: true,
+    });
+  }
+  res.status(200).send();
+});
+
+const PORT = process.env.PORT || 4242;
+app.listen(PORT, () => console.log(`Running on port ${PORT}`));
