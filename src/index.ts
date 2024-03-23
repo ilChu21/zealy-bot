@@ -141,7 +141,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
   const chatId = '-1002064706879';
 
   if (secret === ZEALY_ENDPOINT_SECRET) {
-    const message = `New Quest Published: ${data.user}\nDescription: ${data.quest}`;
+    const message = `New Quest Published: ${data.user.name}\nDescription: ${data.quest.name}`;
 
     bot
       .sendMessage(chatId, message, {
