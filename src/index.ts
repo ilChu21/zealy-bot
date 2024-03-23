@@ -141,14 +141,23 @@ app.post('/webhook', (req: any, res: any) => {
   const chatId = '-1002064706879';
 
   if (secret === ZEALY_ENDPOINT_SECRET) {
-    const message = `New Quest Published: ${data.title}\nDescription: ${data.description}`;
+    const message = `New Quest Published: ${data.user}\nDescription: ${data.quest}`;
 
-    bot.sendMessage(chatId, message, {
-      parse_mode: 'HTML',
-      disable_web_page_preview: true,
-    });
+    bot
+      .sendMessage(chatId, message, {
+        parse_mode: 'HTML',
+        disable_web_page_preview: true,
+      })
+      .then(() => {
+        res.status(200).send('Message sent successfully');
+      })
+      .catch((error) => {
+        console.error('Error sending message to Telegram:', error);
+        res.status(500).send('Error sending message to Telegram');
+      });
+  } else {
+    res.status(403).send('Unauthorized');
   }
-  res.status(200).send();
 });
 
 const PORT = process.env.PORT || 4242;
