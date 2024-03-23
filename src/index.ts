@@ -136,7 +136,7 @@ const app = express();
 
 app.use(express.json());
 
-app.post('/webhook', (req: any, res: any) => {
+app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
   const { id, type, data, time, secret } = req.body;
   const chatId = '-1002064706879';
 
