@@ -26,11 +26,6 @@ console.log('Zealy bot started...');
 
 bot.on('channel_post', async (msg) => {
   if (msg.chat.username === channelUsername) {
-    if (msg.poll) {
-      console.log('Skipping poll message:', msg.poll);
-      return;
-    }
-
     const title = 'New Announcement!';
     const color = parseInt('01FE89', 16);
 
@@ -63,6 +58,23 @@ bot.on('channel_post', async (msg) => {
           color: color,
         };
         await discordWebhook.send({ files: [videoUrl] });
+        await discordWebhook.send({ embeds: [embed] });
+      } else if (msg.poll) {
+        const imageUrl =
+          'https://cdn.discordapp.com/attachments/1001892605551988886/1222966940277145863/image.png?ex=661823b8&is=6605aeb8&hm=93985b7311b72c007d55eada492126a61f6bc8acc8f8a4f1cb3ded8644d67469&';
+        const pollMessageLink = `https://t.me/${msg.chat.username}/${msg.message_id}`;
+        const message = `
+Head over to Telegram to participate in our poll!
+TG poll message link: ${pollMessageLink}
+`;
+
+        const embed = {
+          title: title,
+          image: { url: imageUrl },
+          description: message,
+          color: color,
+        };
+
         await discordWebhook.send({ embeds: [embed] });
       } else {
         const embed = {
