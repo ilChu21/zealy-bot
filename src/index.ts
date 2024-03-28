@@ -65,6 +65,7 @@ bot.on('channel_post', async (msg) => {
         const pollMessageLink = `https://t.me/${msg.chat.username}/${msg.message_id}`;
         const message = `
 Head over to Telegram to participate in our poll!
+
 TG poll message link: ${pollMessageLink}
 `;
 
