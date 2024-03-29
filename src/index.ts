@@ -1,15 +1,23 @@
 import 'dotenv/config';
 import axios from 'axios';
 import axiosRetry from 'axios-retry';
-import express from 'express';
-import { WebhookClient } from 'discord.js';
+import { WebhookClient, Client, IntentsBitField } from 'discord.js';
 import {
+  DISCORD_TOKEN,
   DISCORD_WEBHOOK_URL,
   TELEGRAM_API_KEY,
   ZEALY_API_KEY,
-  ZEALY_ENDPOINT_SECRET,
 } from './utils/env-vars';
 import { bot } from './telegram/client';
+
+const client = new Client({
+  intents: [
+    IntentsBitField.Flags.Guilds,
+    IntentsBitField.Flags.GuildMembers,
+    IntentsBitField.Flags.GuildMessages,
+    IntentsBitField.Flags.MessageContent,
+  ],
+});
 
 axiosRetry(axios, {
   retries: 3,
@@ -21,14 +29,86 @@ const page = 0;
 const limit = 20;
 
 const channelUsername = 'SwapXfiannouncements1';
+const discordChannelId = '1202651838147592222';
+const color = parseInt('01FE89', 16);
+const title = 'New Announcement!';
+const questTitle = '**🕵️‍♀️ New Zealy Quest Published! 🕵️‍♂️**';
 
-console.log('Zealy bot started...');
+client.on('ready', (c) => {
+  console.log(`Logged in as ${c.user!.tag}!`);
+  console.log('Zealy bot started...');
+});
+
+async function fetchNewestPublishedQuest(
+  subdomain: string,
+  ZEALY_API_KEY: string | undefined
+) {
+  try {
+    const response = await axios.get(
+      `https://api-v2.zealy.io/public/communities/${subdomain}/quests`,
+      {
+        headers: {
+          'x-api-key': ZEALY_API_KEY,
+        },
+      }
+    );
+
+    const sortedQuests = response.data.sort((a: any, b: any) => {
+      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+    });
+
+    const newestPublishedQuest = sortedQuests.find(
+      (quest: any) => quest.published
+    );
+
+    return newestPublishedQuest;
+  } catch (error) {
+    console.error('Error fetching quests:', error);
+    throw error;
+  }
+}
+
+client.on('messageCreate', async (message) => {
+  if (
+    message.channel.id === discordChannelId &&
+    message.content.includes('@Xplorer')
+  ) {
+    try {
+      const newestQuest = await fetchNewestPublishedQuest(
+        subdomain,
+        ZEALY_API_KEY
+      );
+
+      if (newestQuest) {
+        const msg = `
+${newestQuest.name}
+
+[Quest Link](https://zealy.io/cw/${subdomain}/questboard/users/${newestQuest.id})
+`;
+        const embed = {
+          title: questTitle,
+          description: msg,
+          color: color,
+        };
+
+        await message.channel.send({ embeds: [embed] });
+        await bot.sendMessage(subdomain, `${questTitle}\n${msg}`, {
+          parse_mode: 'Markdown',
+          disable_web_page_preview: true,
+        });
+      } else {
+        console.log('No published quests found.');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+});
+
+client.login(DISCORD_TOKEN);
 
 bot.on('channel_post', async (msg) => {
   if (msg.chat.username === channelUsername) {
-    const title = 'New Announcement!';
-    const color = parseInt('01FE89', 16);
-
     const discordWebhook = new WebhookClient({ url: DISCORD_WEBHOOK_URL });
 
     try {
@@ -100,7 +180,7 @@ bot.onText(/\/leaderboard/, async (msg) => {
   try {
     const chatId = msg.chat.id;
     const response = await axios.get(
-      `https://api-v1.zealy.io/communities/${subdomain}/leaderboard`,
+      `https://api-v2.zealy.io/public/communities/${subdomain}/leaderboard`,
       {
         params: {
           page: page,
@@ -136,7 +216,7 @@ bot.onText(/\/leaderboard/, async (msg) => {
     message +=
       '\n<b><a href="https://zealy.io/cw/swapxfi/leaderboard">Zealy Leaderboard</a></b>';
 
-    bot.sendMessage(chatId, message, {
+    await bot.sendMessage(chatId, message, {
       parse_mode: 'HTML',
       disable_web_page_preview: true,
     });
@@ -144,37 +224,3 @@ bot.onText(/\/leaderboard/, async (msg) => {
     console.error(error);
   }
 });
-
-const app = express();
-
-app.use(express.json());
-
-app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
-  const { id, type, data, time, secret } = req.body;
-  const chatId = '-1002064706879';
-
-  if (secret === ZEALY_ENDPOINT_SECRET) {
-    let questName = data.quest.name
-      ? data.quest.name
-      : 'Quest name not available';
-    const message = `New Quest Published: ${data.user.name}\nDescription: ${questName}`;
-
-    bot
-      .sendMessage(chatId, message, {
-        parse_mode: 'HTML',
-        disable_web_page_preview: true,
-      })
-      .then(() => {
-        res.status(200).send('Message sent successfully');
-      })
-      .catch((error) => {
-        console.error('Error sending message to Telegram:', error);
-        res.status(500).send('Error sending message to Telegram');
-      });
-  } else {
-    res.status(403).send('Unauthorized');
-  }
-});
-
-const PORT = process.env.PORT || 4242;
-app.listen(PORT, () => console.log(`Running on port ${PORT}`));
