@@ -180,7 +180,7 @@ bot.onText(/\/leaderboard/, async (msg) => {
   try {
     const chatId = msg.chat.id;
     const response = await axios.get(
-      `https://api-v1.zealy.io/public/communities/${subdomain}/leaderboard`,
+      `https://api-v1.zealy.io/communities/${subdomain}/leaderboard`,
       {
         params: {
           page: page,
