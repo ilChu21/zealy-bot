@@ -71,7 +71,7 @@ async function fetchNewestPublishedQuest(
 client.on('messageCreate', async (message) => {
   if (
     message.channel.id === discordChannelId &&
-    message.content.includes('@Xplorer')
+    message.content.includes('A new quest has been published')
   ) {
     try {
       const newestQuest = await fetchNewestPublishedQuest(
@@ -92,7 +92,7 @@ ${newestQuest.name}
         };
 
         await message.channel.send({ embeds: [embed] });
-        await bot.sendMessage(subdomain, `${questTitle}\n${msg}`, {
+        await bot.sendMessage(`@${subdomain}`, `${questTitle}\n${msg}`, {
           parse_mode: 'Markdown',
           disable_web_page_preview: true,
         });
