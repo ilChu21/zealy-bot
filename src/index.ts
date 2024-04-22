@@ -9,7 +9,6 @@ import {
   ZEALY_API_KEY,
 } from './utils/env-vars';
 import { bot } from './telegram/client';
-import express from 'express';
 
 const client = new Client({
   intents: [
@@ -225,33 +224,3 @@ bot.onText(/\/leaderboard/, async (msg) => {
     console.error(error);
   }
 });
-
-const app = express();
-
-// const apiKey = '5888a6800dbac634e52d8504f097e064';
-
-app.post('/claim', express.raw({ type: 'application/json' }), (req, res) => {
-  const payload = req.body;
-  const headers = req.headers;
-
-  console.log(JSON.stringify(payload));
-
-  // if (apiKey !== headers['x-api-key']) {
-  //   throw new Error('Invalid API Key');
-  // }
-
-  const success = true; // Replace with custom logic
-
-  if (!success) {
-    return res.status(400).send({
-      message: 'Validation failed', // Replace with custom error message - will be displayed to the user
-    });
-  }
-
-  return res.status(200).send({
-    message: 'Quest completed',
-  });
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Running on port ${PORT}`));
