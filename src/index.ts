@@ -228,15 +228,17 @@ bot.onText(/\/leaderboard/, async (msg) => {
 
 const app = express();
 
-const apiKey = '5888a6800dbac634e52d8504f097e064';
+// const apiKey = '5888a6800dbac634e52d8504f097e064';
 
 app.post('/claim', express.raw({ type: 'application/json' }), (req, res) => {
   const payload = req.body;
   const headers = req.headers;
 
-  if (apiKey !== headers['x-api-key']) {
-    throw new Error('Invalid API Key');
-  }
+  console.log(JSON.stringify(payload));
+
+  // if (apiKey !== headers['x-api-key']) {
+  //   throw new Error('Invalid API Key');
+  // }
 
   const success = true; // Replace with custom logic
 
@@ -251,5 +253,5 @@ app.post('/claim', express.raw({ type: 'application/json' }), (req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 4242;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Running on port ${PORT}`));
