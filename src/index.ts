@@ -251,4 +251,5 @@ app.post('/claim', express.raw({ type: 'application/json' }), (req, res) => {
   });
 });
 
-app.listen(3000, () => console.log('Running on port 3000'));
+const PORT = process.env.PORT || 4242;
+app.listen(PORT, () => console.log(`Running on port ${PORT}`));
